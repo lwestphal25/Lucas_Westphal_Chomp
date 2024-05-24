@@ -102,9 +102,14 @@ public class MyPlayer {
                 filler.add(new int[]{c1, i, c3});
             }
         }
-        for (int i=c1-1;i>=0;i--){
-            if (i <= c2 && i <= c3){
-                filler.add(new int[]{i, i, i});
+        for (int i=c1-1;i>=1;i--){
+            if (i <= c2){
+                if (i <= c3){
+                    filler.add(new int[]{i, i, i});
+                }else{
+                    filler.add(new int[]{i, i, c3});
+                }
+
             }else{
                 filler.add(new int[]{i, c2, c3});
             }
@@ -115,29 +120,37 @@ public class MyPlayer {
     }
 
     public void organizeBoard(int[] board){
-        System.out.println("iterating");
+        boolean isLifeBoard = false;
 
-        boolean hasOnlyLifeBoards = true;
         ArrayList<int[]> resultingBoards = resultingBoards(board);
+        //if board is 210
+        System.out.println("Resulting Board for Board:" + board[0]+","+board[1]+","+board[2]);
+        for (int[] i : resultingBoards){
+            System.out.println(i[0]+","+i[1]+","+i[2]);
+        }
         for (int a = 0;a<resultingBoards.size();a++){
             for (int b = 0;b<deathBoards.size();b++){
+
                 if (resultingBoards.get(a)[0] == deathBoards.get(b)[0] && resultingBoards.get(a)[1] == deathBoards.get(b)[1] && resultingBoards.get(a)[2] == deathBoards.get(b)[2]){
-                    lifeBoards.add(board);
+                    isLifeBoard = true;
                 }
             }
         }
+        int count = 0;
 
         for (int a = 0;a<resultingBoards.size();a++){
             for (int b = 0;b<lifeBoards.size();b++){
                 if (resultingBoards.get(a)[0] == lifeBoards.get(b)[0] && resultingBoards.get(a)[1] == lifeBoards.get(b)[1] && resultingBoards.get(a)[2] == lifeBoards.get(b)[2]){
-                }else{
-                    hasOnlyLifeBoards = false;
+                    count++;
                 }
             }
         }
 
-        if (hasOnlyLifeBoards){
+        if (count == resultingBoards.size()){
             deathBoards.add(board);
+        }
+        if (isLifeBoard){
+            lifeBoards.add(board);
         }
 
 
