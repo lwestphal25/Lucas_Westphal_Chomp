@@ -12,43 +12,7 @@ public class MyPlayer {
     public ArrayList<int[]> deathBoards = new ArrayList<int[]>();
 
 
-    public MyPlayer() {
-        //int count = 1;
-//a resulting board takes the column values for the current board, and, if c is changed alters only c. if b is changed alters b and c, if a is changed alters all 3
-        /*for (int a=1;a<=3;a++){
-            for (int b=0;b<=3;b++){
-                for (int c=0;c<=3;c++){
-                    if (c<=b && b<= a){
-                        System.out.println("");
-                        System.out.println("board "+count+": ("+a+","+b+","+c+")");
-                        System.out.println("board "+count+" has these resulting boards:");
-                        count++;
-                        for (int x=1;x<a;x++){
-                            if (x<=b && x<= c){
-                                System.out.println("("+x+", "+x+", "+x+")");
-                            }else{
-                                System.out.println("("+x+", "+b+", "+c+")");
-                            }
-                        }
-                        for (int y=0;y<b;y++){
-                            if (y<= c){
-                                System.out.println("("+a+", "+y+", "+y+")");
-                            }else{
-                                System.out.println("("+a+", "+y+", "+c+")");
-                            }
-                        }
-                        for (int z=0;z<c;z++){
-                            System.out.println("("+a+", "+b+", "+z+")");
-                        }
-
-
-                        }
-
-                    }
-                }
-            }
-
-         */
+    public MyPlayer () {
 
         for (int col1=1;col1<=3;col1++){
             for (int col2=0;col2<=3;col2++){
@@ -62,21 +26,25 @@ public class MyPlayer {
             }
         }
 
-       // for (int[] board : allBoards){
-          //  System.out.println(board[0]+","+board[1]+","+board[2]+","+isLifeBoard(board));
-        //}
-
         deathBoards.add(allBoards.get(0));
         for (int i = 1; i<allBoards.size();i++){
             organizeBoard(allBoards.get(i));
         }
+
         System.out.println("Life Boards");
-        for (int[] board : lifeBoards){
-            System.out.println(board[0]+","+board[1]+","+board[2]);
+        System.out.println(lifeBoards.size());
+        for (int[] lifeBoard : lifeBoards){
+            System.out.println(lifeBoard[0]+","+lifeBoard[1]+","+lifeBoard[2]);
+            int[] nextBoard = nextBoard(lifeBoard);
+            System.out.println("Next board is: " + nextBoard[0]+","+nextBoard[1]+","+nextBoard[2]);
+            System.out.println("So press the chip at location: " + nextMove(lifeBoard, nextBoard)[0]+","+nextMove(lifeBoard, nextBoard)[1]);
         }
         System.out.println("Death Boards");
-        for (int[] board : deathBoards){
-            System.out.println(board[0]+","+board[1]+","+board[2]);
+        for (int[] deathBoard : deathBoards){
+            System.out.println(deathBoard[0]+","+deathBoard[1]+","+deathBoard[2]);
+           int[] nextBoard = nextBoard(deathBoard);
+            System.out.println("Next board is: " + nextBoard[0]+","+nextBoard[1]+","+nextBoard[2]);
+            System.out.println("So press the chip at location: " + nextMove(deathBoard, nextBoard)[0]+","+nextMove(deathBoard, nextBoard)[1]);
         }
 
 
@@ -91,6 +59,10 @@ public class MyPlayer {
         int c2 = board[1];
         int c3 = board[2];
        ArrayList<int[]> filler = new ArrayList<int[]>();
+
+       //for (int f = board.length-1;f>=0;f--){
+          // for ()
+      // }
 
         for (int i=c3-1; i>=0;i--){
             filler.add(new int[]{c1, c2, i});
@@ -119,15 +91,12 @@ public class MyPlayer {
        return filler;
     }
 
-    public void organizeBoard(int[] board){
+    public boolean organizeBoard(int[] board){
         boolean isLifeBoard = false;
 
         ArrayList<int[]> resultingBoards = resultingBoards(board);
         //if board is 210
-        System.out.println("Resulting Board for Board:" + board[0]+","+board[1]+","+board[2]);
-        for (int[] i : resultingBoards){
-            System.out.println(i[0]+","+i[1]+","+i[2]);
-        }
+
         for (int a = 0;a<resultingBoards.size();a++){
             for (int b = 0;b<deathBoards.size();b++){
 
@@ -148,57 +117,77 @@ public class MyPlayer {
 
         if (count == resultingBoards.size()){
             deathBoards.add(board);
+            return false;
         }
         if (isLifeBoard){
             lifeBoards.add(board);
+            return true;
         }
+        return false;
 
 
     }
 
-    public boolean isLifeBoard(int[] board){
-        int c1 = board[0];
-        int c2 = board[1];
-        int c3 = board[2];
 
-       if (c1<=1 && c2<=0 && c3<=0){
-           return false;
-
-       }
-
-       for (int i=c3-1; i>=0;i--){
-           if (!isLifeBoard(new int[]{c1, c2, i})){
-               return true;
-           }
-       }
-       for (int i=c2-1;i>=0;i--){
-           if (i <= c3){
-               if (!isLifeBoard(new int[]{c1, i, i})){
-                   return true;
-               }
-           }else{
-               if(!isLifeBoard(new int[]{c1, i, c3})){
-                   return true;
-               }
-           }
-       }
-        for (int i=c1-1;i>=0;i--){
-            if (i <= c2 && i <= c3){
-                if (!isLifeBoard(new int[]{i, i, i})){
-                    return true;
-                }
-            }else{
-                if(!isLifeBoard(new int[]{i, c2, c3})){
-                    return true;
+    public int[] nextBoard(int[] board){
+        ArrayList<int[]> resultingBoards = resultingBoards(board);
+        for (int[] a : resultingBoards){
+            for (int[] b : deathBoards){
+                if (a[0]==b[0] && a[1]==b[1]&&a[2]==b[2]){
+                    return a;
                 }
             }
         }
+        if(board[0] == 1 && board[1]==0 && board[2]==0){
+            return new int[]{0,0,0};
+        }else{
+            int randomBoard = (int)(Math.random()*resultingBoards.size());
+            return resultingBoards.get(randomBoard);
+        }
 
-        return false;
+
+
+        /*if (lifeBoards.contains(board)){
+            for (int[] i : resultingBoards){
+                System.out.println(Arrays.toString(i));
+
+                if (deathBoards.contains(i)){
+                    return i;
+                }
+            }
+
+        }
+        if(board[0] == 1 && board[1]==0 && board[2]==0){
+            return new int[]{0,0,0};
+        }else{
+            int randomBoard = (int)(Math.random()*resultingBoards.size());
+            return resultingBoards.get(randomBoard);
+        }
+
+         */
+
+
+
+
+
+
+    }
+
+    public int[] nextMove(int[] board, int[] nextBoard){
+        int[] differences = new int[board.length];
+        for (int i=0;i<board.length;i++){
+            differences[i] = board[i]-nextBoard[i];
+            if (differences[i]>0){
+                return new int[]{i, nextBoard[i]};
+            }
+        }
+        return new int[]{0,0};
 
     }
 
     public Point move(Chip[][] pBoard) {
+
+         int[] board = new int[10];
 
         System.out.println("MyPlayer Move");
 
@@ -215,8 +204,28 @@ public class MyPlayer {
          * You'll be returning a data type called Point which consists of two integers.
          */
 
+        for (int c = 0; c<pBoard.length;c++){
+            int count = 0;
+            for (int r = 0; r<pBoard[0].length;r++){
+                if (pBoard[r][c].isAlive){
+                    count++;
+                }
+            }
+            board[c] = count;
+
+        }
+        System.out.println("board:");
+        for (int i = 0; i< board.length;i++){
+            System.out.println(board[i]);
+        }
+
+        row = nextMove(board, nextBoard(board))[1];
+        column = nextMove(board, nextBoard(board))[0];
+
         Point myMove = new Point(row, column);
         return myMove;
     }
+
+
 
 }
